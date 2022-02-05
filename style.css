@@ -92,7 +92,7 @@ body {
 
 }
 
-.number, .blank {
+.number, .blank, .point {
 
 	background-color: #aaa;
 	color: #555;

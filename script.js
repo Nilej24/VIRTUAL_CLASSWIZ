@@ -1,7 +1,7 @@
 const screenCalc = document.querySelector(".calculation");
 const screenAns = document.querySelector(".answer");
 
-const inputButtons = document.querySelectorAll(".number, .operator");
+const inputButtons = document.querySelectorAll(".number, .operator, .point");
 const equalsButton = document.querySelector(".equals");
 const clearButton = document.querySelector(".clear");
 const delButton = document.querySelector(".delete");
@@ -26,7 +26,7 @@ function isNum(str) {
 function addToCalc(input) {
 
 	// for checking if inputs are possible
-	let finalValue = calcValues[calcValues.length - 1];
+	let finalValue = calcValues[calcValues.length - 1] || "";
 
 	// number
 	if(isNum(input)) {
@@ -36,7 +36,7 @@ function addToCalc(input) {
 
 		if(calcText == "")
 			calcText = input;
-		else if(isNum(finalValue))
+		else if(isNum(finalValue) || finalValue == ".")
 			calcText += input;
 		else if(finalValue != "Ans")
 			calcText += "  " + input;
@@ -52,6 +52,24 @@ function addToCalc(input) {
 		if(calcText == "")
 			calcText = input;
 		else if(!isNum(finalValue) && finalValue != "Ans")
+			calcText += "  " + input;
+		else
+			return;
+
+	// point
+	} else if(input == ".") {
+
+		if(finalValue.includes(".") && !justEvaluated)
+			return;
+
+		if(justEvaluated)
+			calcText = "";
+
+		if(calcText == "")
+			calcText = input;
+		else if(isNum(finalValue))
+			calcText += input;
+		else if(finalValue != "Ans")
 			calcText += "  " + input;
 		else
 			return;
