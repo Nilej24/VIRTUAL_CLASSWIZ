@@ -26,12 +26,17 @@ function isNum(str) {
 function addToCalc(input) {
 
 	// for checking if inputs are possible
-	const finalValue = calcValues[calcValues.length - 1];
+	let finalValue = calcValues[calcValues.length - 1];
 
 	// number
 	if(isNum(input)) {
 
-		if(isNum(finalValue))
+		if(justEvaluated)
+			calcText = "";
+
+		if(calcText == "")
+			calcText = input;
+		else if(isNum(finalValue))
 			calcText += input;
 		else if(finalValue != "Ans")
 			calcText += "  " + input;
@@ -41,7 +46,12 @@ function addToCalc(input) {
 	// Ans
 	} else if(input == "Ans") {
 	
-		if(!isNum(finalValue) && finalValue != "Ans")
+		if(justEvaluated)
+			calcText = "";
+
+		if(calcText == "")
+			calcText = input;
+		else if(!isNum(finalValue) && finalValue != "Ans")
 			calcText += "  " + input;
 		else
 			return;
@@ -49,6 +59,15 @@ function addToCalc(input) {
 	// operators
 	} else {
 	
+		if(justEvaluated)
+			calcText = "Ans";
+		else if(calcValues.length == 3) {
+		
+			evaluate();
+			calcText = "Ans";
+		
+		}
+
 		if(isNum(finalValue) || finalValue == "Ans")
 			calcText += "  " + input;
 		else
@@ -59,7 +78,9 @@ function addToCalc(input) {
 	screenCalc.textContent = calcText;
 
 	// sync the array with the text
-	calcValues = calcText.slice(2).split("  ");
+	calcValues = calcText.split("  ");
+
+	justEvaluated = false;
 
 }
 // add function to input buttons
@@ -77,6 +98,8 @@ function clear() {
 	screenCalc.textContent = "";
 	screenAns.textContent = "";
 
+	justEvaluated = false;
+
 }
 clearButton.onclick = clear;
 
@@ -84,9 +107,10 @@ clearButton.onclick = clear;
 function del() {
 
 	calcValues.pop();
-	if(calcText !== "")
-		calcText = "  " + calcValues.join("  ");
+	calcText = calcValues.join("  ");
 	screenCalc.textContent = calcText;
+
+	justEvaluated = false;
 
 }
 delButton.onclick = del;
@@ -95,8 +119,20 @@ delButton.onclick = del;
 function evaluate() {
 
 	// checks if calculation is possible
-	if(calcValues.length != 3)
+	if(calcValues.length != 3 && calcValues.length != 1)
 		return;
+
+	// for sorting out some annoying stuff
+	justEvaluated = true;
+
+	// for the case where it's literally just a value
+	if(calcValues.length == 1) {
+	
+		ansValue = calcValues[0] == "Ans" ? ansValue : +calcValues[0];
+		screenAns.textContent = ansValue;
+		return;
+	
+	}
 
 	// read values from the screen (should be the same as stuff in array)
 	const a = calcValues[0] == "Ans" ? ansValue : +calcValues[0];
@@ -126,8 +162,6 @@ function evaluate() {
 	}
 
 	screenAns.textContent = ansValue;
-
-	justEvaluated = true;
 
 }
 equalsButton.onclick = evaluate;
