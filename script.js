@@ -16,7 +16,7 @@ let justEvaluated = false;
 function isNum(str) {
 
 	if(Number.isNaN(+str)) return false;
-	if(str === "") return false;
+	if(str === "" || str === " ") return false;
 
 	return true;
 
@@ -40,8 +40,6 @@ function addToCalc(input) {
 			calcText += input;
 		else if(finalValue != "Ans")
 			calcText += "  " + input;
-		else
-			return;
 
 	// Ans
 	} else if(input == "Ans") {
@@ -53,8 +51,6 @@ function addToCalc(input) {
 			calcText = input;
 		else if(!isNum(finalValue) && finalValue != "Ans")
 			calcText += "  " + input;
-		else
-			return;
 
 	// point
 	} else if(input == ".") {
@@ -71,8 +67,6 @@ function addToCalc(input) {
 			calcText += input;
 		else if(finalValue != "Ans")
 			calcText += "  " + input;
-		else
-			return;
 
 	// operators
 	} else {
@@ -88,9 +82,7 @@ function addToCalc(input) {
 
 		if(isNum(finalValue) || finalValue == "Ans")
 			calcText += "  " + input;
-		else
-			return;
-	
+
 	}
 
 	screenCalc.textContent = calcText;
@@ -183,3 +175,42 @@ function evaluate() {
 
 }
 equalsButton.onclick = evaluate;
+
+document.addEventListener("keydown", function (ev) {
+
+	switch(ev.key) {
+	
+		case "=":
+		case "Enter":
+			evaluate();
+			break;
+			
+		case "a":
+			addToCalc("Ans");
+			break;
+
+		case "d":
+		case "Backspace":
+			del();
+			break;
+
+		case "c":
+			clear();
+			break;
+
+		case "*":
+		case "/":
+		case "+":
+		case "-":
+		case ".":
+			addToCalc(ev.key);
+			break;
+		
+		default:
+			if(isNum(ev.key))
+				addToCalc(ev.key);
+		
+
+	}
+
+});
