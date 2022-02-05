@@ -4,10 +4,13 @@ const screenAns = document.querySelector(".answer");
 const inputButtons = document.querySelectorAll(".number, .operator");
 const equalsButton = document.querySelector(".equals");
 const clearButton = document.querySelector(".clear");
+const delButton = document.querySelector(".delete");
 
 let calcText = "";
 let calcValues = [];
 let ansValue;
+
+let justEvaluated = false;
 
 // converting strings to numbers is SOOO ANNOYING
 function isNum(str) {
@@ -77,6 +80,17 @@ function clear() {
 }
 clearButton.onclick = clear;
 
+// deletes the last part of the calculation
+function del() {
+
+	calcValues.pop();
+	if(calcText !== "")
+		calcText = "  " + calcValues.join("  ");
+	screenCalc.textContent = calcText;
+
+}
+delButton.onclick = del;
+
 // does the calculation on the screen
 function evaluate() {
 
@@ -113,8 +127,7 @@ function evaluate() {
 
 	screenAns.textContent = ansValue;
 
-	calcText = "";
-	calcValues = [];
+	justEvaluated = true;
 
 }
 equalsButton.onclick = evaluate;
