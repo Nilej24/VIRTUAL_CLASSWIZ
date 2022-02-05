@@ -3,16 +3,17 @@ const screenAns = document.querySelector(".answer");
 
 const inputButtons = document.querySelectorAll(".number, .operator");
 const equalsButton = document.querySelector(".equals");
+const clearButton = document.querySelector(".clear");
 
 let calcText = "";
 let calcValues = [];
 let ansValue;
 
 // converting strings to numbers is SOOO ANNOYING
-function strIsNum(str) {
+function isNum(str) {
 
 	if(Number.isNaN(+str)) return false;
-	if(str == "") return false;
+	if(str === "") return false;
 
 	return true;
 
@@ -21,27 +22,34 @@ function strIsNum(str) {
 // for when you press a number or operator button
 function addToCalc(input) {
 
+	// for checking if inputs are possible
 	const finalValue = calcValues[calcValues.length - 1];
 
 	// number
-	if(strIsNum(input)) {
-	
-		if(strIsNum(finalValue))
+	if(isNum(input)) {
+
+		if(isNum(finalValue))
 			calcText += input;
 		else if(finalValue != "Ans")
 			calcText += "  " + input;
+		else
+			return;
 
 	// Ans
 	} else if(input == "Ans") {
 	
-		if(!strIsNum(finalValue) && finalValue != "Ans")
+		if(!isNum(finalValue) && finalValue != "Ans")
 			calcText += "  " + input;
+		else
+			return;
 
 	// operators
 	} else {
 	
-		if(strIsNum(finalValue) || finalValue == "Ans")
+		if(isNum(finalValue) || finalValue == "Ans")
 			calcText += "  " + input;
+		else
+			return;
 	
 	}
 
@@ -51,13 +59,23 @@ function addToCalc(input) {
 	calcValues = calcText.slice(2).split("  ");
 
 }
-
 // add function to input buttons
 inputButtons.forEach(function (button) {
 
 	button.onclick = () => addToCalc(button.textContent);
 
 });
+
+// clears calculation (but keeps answer value stored)
+function clear() {
+
+	calcText = "";
+	calcValues = [];
+	screenCalc.textContent = "";
+	screenAns.textContent = "";
+
+}
+clearButton.onclick = clear;
 
 // does the calculation on the screen
 function evaluate() {
@@ -67,16 +85,21 @@ function evaluate() {
 		return;
 
 	// read values from the screen (should be the same as stuff in array)
-	const a = calcValues[0];
-	const b = calcValues[2];
+	const a = calcValues[0] == "Ans" ? ansValue : +calcValues[0];
+	const b = calcValues[2] == "Ans" ? ansValue : +calcValues[2];
 	const op = calcValues[1];
 	
+	// does the right operation
 	switch(op) {
 	
 		case "*":
 			ansValue = a * b;
 			break;
 		case "/":
+			if(b == 0) {
+				alert("ew");
+				return;
+			}
 			ansValue = a / b;
 			break;
 		case "+":
@@ -84,8 +107,14 @@ function evaluate() {
 			break;
 		case "-":
 			ansValue = a - b;
-			break
+			break;
 	
 	}
 
+	screenAns.textContent = ansValue;
+
+	calcText = "";
+	calcValues = [];
+
 }
+equalsButton.onclick = evaluate;
